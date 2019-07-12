@@ -1,0 +1,334 @@
+html,
+body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: "Rakkas";
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-width: 400px;
+}
+
+#background-overlay {
+  z-index: 2;
+  background-color: lightgray;
+  opacity: 0.4;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+
+.fighter-logo {
+  display: flex;
+  justify-content: center;
+}
+
+.logo-image {
+  height: 100px;
+}
+
+.fighters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+  flex-wrap: wrap;
+  padding: 0 15px;
+}
+
+.fighter {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.fighter:hover {
+  box-shadow: 0 0 50px 10px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+}
+
+.name {
+  align-self: center;
+  font-size: 21px;
+  margin-top: 20px;
+}
+
+.fighter-image {
+  height: 200px;
+}
+
+#loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  background: rgba(255, 255, 255, 0.7);
+  visibility: hidden;
+}
+
+#game {
+  display: flex;
+  flex-direction: column;
+}
+
+.game-panel {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 50px;
+  align-items: center;
+}
+
+.select-fighters {
+  display: flex;
+  margin: 15px 20px;
+  flex: 1 1 0;
+}
+
+.select-fighter-container {
+  flex: 1 1 0;
+}
+
+.select-fighter-label {
+  font-size: 24px;
+  margin: 5px 10px;
+}
+
+.select-fighter {
+  font-family: "Rakkas", cursive;
+  font-size: 20px;
+}
+
+.start-game,
+.back-btn,
+.next-btn {
+  width: 150px;
+  height: 50px;
+  font-family: "Rakkas", cursive;
+  font-size: 20px;
+}
+
+.next-btn {
+  margin-right: 20px;
+}
+
+.start-game:hover,
+.select-fighter:hover,
+.next-btn:hover,
+.back-btn:hover {
+  box-shadow: 0 0 50px 10px rgba(0, 0, 0, 0.06);
+}
+
+#modal {
+  z-index: 3;
+  position: absolute;
+  background-color: khaki;
+  border-radius: 10px;
+  width: 600px;
+  height: 400px;
+  top: 50%;
+  left: 50%;
+  margin-top: -200px;
+  margin-left: -250px;
+  box-shadow: 0 0 50px 10px rgba(0, 0, 0, 0.1);
+  display: none;
+}
+
+.fighter-details-image {
+  height: 300px;
+  margin: 20px;
+  max-height: 360px;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.fighters-internal-container {
+  display: flex;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  max-width: 95vw;
+}
+
+.fighters-internal-container::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #f5f5f5;
+  border-radius: 10px;
+}
+
+.fighters-internal-container::-webkit-scrollbar {
+  width: 10px;
+  background-color: #f5f5f5;
+}
+
+.fighters-internal-container::-webkit-scrollbar-thumb {
+  background-color: #aaa;
+  border-radius: 10px;
+  background-image: -webkit-linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.2) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.2) 50%,
+    rgba(0, 0, 0, 0.2) 75%,
+    transparent 75%,
+    transparent
+  );
+}
+
+.fighter-details-view {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+}
+
+.fighter-details-image-container,
+.fighter-info-container {
+  flex: 1 1 0;
+}
+
+.fighter-details-image-container {
+  text-align: center;
+}
+
+.fighter-info-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 10px;
+}
+
+.fighter-name {
+  font-size: 40px;
+  text-align: center;
+  margin: 20px 5px;
+}
+
+.fighter-input-container {
+  display: flex;
+  margin: 15px 5px;
+  font-size: 20px;
+  align-items: center;
+}
+
+.fighter-input-label {
+  flex-grow: 1;
+  font-size: 20px;
+  line-height: 20px;
+}
+
+.fighter-input-container input {
+  flex-grow: 0;
+  width: 60%;
+  padding: 5px;
+  font-size: 20px;
+  line-height: 20px;
+  border-radius: 5px;
+}
+
+.fight-view-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 20px 30px;
+}
+
+.fighter-update-container {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.fighter-update-btn {
+  font-size: 20px;
+  position: absolute;
+  bottom: 40px;
+}
+
+.fighter-update-btn:hover {
+  box-shadow: 0 0 50px 10px rgba(0, 0, 0, 0.1);
+}
+
+.active-fighters-container {
+  display: flex;
+  justify-content: space-around;
+}
+
+.active-fighter {
+  width: 150px;
+}
+
+.fight-header {
+  text-align: center;
+  color: maroon;
+  font-size: 25px;
+}
+
+.winner-panel {
+  text-align: center;
+  color: limegreen;
+  font-size: 20px;
+}
+
+.active-fighter-image {
+  height: 200px;
+  margin-top: 15px;
+}
+
+.active-fighter-name {
+  text-align: center;
+  font-size: 25px;
+  color: maroon;
+}
+
+.attack,
+.defense {
+  text-align: center;
+  font-size: 15px;
+}
+
+.attack span,
+.defense span {
+  padding: 10px;
+}
+
+.health-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.health-value {
+  color: forestgreen;
+  margin-right: 20px;
+}
+
+.health-bar {
+  height: 10px;
+  background-color: lawngreen;
+}
+
+.buttons-container {
+  display: flex;
+  justify-content: center;
+}
