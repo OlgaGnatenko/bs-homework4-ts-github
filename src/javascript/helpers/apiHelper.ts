@@ -3,20 +3,28 @@
 
 import APP_CONSTANTS from "./constants";
 
-function callApi(endpoint, method, body) {
-  const url = APP_CONSTANTS.LOCAL_API_URL + endpoint;
-  const headers = new Headers();
+export type HTTPMethod = "POST" | "GET" | "PUT" | "DELETE";
+export interface IHTTPOptions {
+  method: HTTPMethod,
+  body?: string, 
+  headers?: Headers,
+  mode?: string 
+};
+
+function callApi(endpoint: string, method: HTTPMethod, body?: string): Promise<any> {
+  const url: string = APP_CONSTANTS.API_URL + endpoint;
+  const headers: Headers = new Headers();
   headers.set("Content-type", "application/json");
 
-  const options = {
+  const options: IHTTPOptions = {
     method,
     body,
     headers,
     mode: "cors"
   };
 
-  return fetch(url, options)
-    .then(response => {
+  return fetch(url, options as RequestInit)
+    .then((response: Response): Promise<JSON> => {
       if (response.ok) {
         return response.json();
       } else {

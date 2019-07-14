@@ -1,18 +1,22 @@
 import View from "./view";
+import IFighter from "../models/fighter";
+import IStringDict from "../models/attributesDict";
 
 class FighterView extends View {
-  constructor(fighter, handleClick) {
+  element: HTMLDivElement | null = null;
+
+  constructor(fighter: IFighter, handleClick: (event: Event, fighter: IFighter) => void) {
     super();
 
-    this.createFighter(fighter, handleClick);
+    this._createFighter(fighter, handleClick);
   }
 
-  createFighter(fighter, handleClick) {
+  private _createFighter(fighter: IFighter, handleClick: (event: Event, fighter: IFighter) => void): void {
     const { name, source } = fighter;
-    const nameElement = this.createName(name);
-    const imageElement = this.createImage(source);
+    const nameElement: HTMLSpanElement = this._createName(name);
+    const imageElement: HTMLDivElement = this._createImage(source || "");
 
-    this.element = this.createElement({ tagName: "div", className: "fighter" });
+    this.element = this.createElement({ tagName: "div", className: "fighter" }) as HTMLDivElement;
     this.element.append(imageElement, nameElement);
     this.element.addEventListener(
       "click",
@@ -21,23 +25,23 @@ class FighterView extends View {
     );
   }
 
-  createName(name) {
+  private _createName(name: string): HTMLSpanElement {
     const nameElement = this.createElement({
       tagName: "span",
       className: "name"
-    });
+    }) as HTMLSpanElement;
     nameElement.innerText = name;
 
     return nameElement;
   }
 
-  createImage(source) {
-    const attributes = { src: source };
-    const imgElement = this.createElement({
+  private _createImage(source: string): HTMLImageElement {
+    const attributes: IStringDict = { src: source };
+    const imgElement: HTMLImageElement = this.createElement({
       tagName: "img",
       className: "fighter-image",
       attributes
-    });
+    }) as HTMLImageElement;
 
     return imgElement;
   }

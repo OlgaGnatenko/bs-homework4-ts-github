@@ -1,22 +1,29 @@
 import View from "./view";
 import SelectFighterView from "./selectFighterView";
+import IFighter from "../models/fighter";
+
+interface IFighterParams {
+  name: string;
+  order: number;
+}
 
 class SelectFightersView extends View {
-  fighters;
+  element: HTMLDivElement | null = null;
+  private _fighters: IFighter[];
 
-  constructor(fighters) {
+  constructor(fighters: IFighter[]) {
     super();
-    this.fighters = fighters;
+    this._fighters = fighters;
 
-    this.createSelectFighters(fighters);
+    this._createSelectFighters(fighters);
   }
 
-  createSelectFighters(fighters) {
+  private _createSelectFighters(fighters: IFighter[]): void {
     this.element = this.createElement({
       tagName: "div",
       className: "select-fighters"
-    });
-    const selectFightersParams = [
+    }) as HTMLDivElement;
+    const selectFightersParams: IFighterParams[] = [
       {
         name: "First Fighter",
         order: 1
@@ -26,18 +33,13 @@ class SelectFightersView extends View {
         order: 2
       }
     ];
-    const selectFighterElements = selectFightersParams.map(
-      ({ name, order }) => {
-        const fightView = new SelectFighterView(name, order, fighters);
-        return fightView.element;
+    const selectFighterElements: HTMLDivElement[] = selectFightersParams.map(
+      ({ name, order }: { name: string; order: number }): HTMLDivElement => {
+        const fightView = new SelectFighterView(name, order.toString(), fighters);
+        return fightView.element as HTMLDivElement;
       }
     );
 
-    const selectFighterElements2 = selectFightersParams.map(
-      ({ name, order }) => {
-        return this.createElement({ tagName: "div", className: order });
-      }
-    );
     this.element.append(...selectFighterElements);
   }
 }

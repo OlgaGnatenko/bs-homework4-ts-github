@@ -1,38 +1,46 @@
-import View from "./view";
-import FightersView from "./fightersView";
+import IFighter from "../models/fighter";
+
+import View, { IView } from "./view";
+import FightersView, { IFightersView } from "./fightersView";
 import SelectFightersView from "./selectFightersView";
 import FightView from "./fightView";
 import { fightersService } from "../services/fightersService";
 import APP_CONSTANTS from "../helpers/constants";
+import { SelectFighterEvent } from "./selectFighterView";
+import { IFight } from "../classes/fight";
 
 class GameView extends View {
-  fighter1;
-  fighter2;
+  element: HTMLDivElement | null = null;
+  private _fightersView: IFightersView | null = null;
+  private _fighter1: IFighter | null = null;
+  private _fighter2: IFighter | null = null;
+  private _startGameClick: () => void;
+  private _selectFighter: () => void;
 
-  fightersView;
-
-  constructor(fighters) {
+  constructor(fighters: IFighter[]) {
     super();
 
     if (fighters.length) {
-      this.fighter1 = fighters[0];
-      this.fighter2 = fighters[0];
+      this._fighter1 = fighters[0];
+      this._fighter2 = fighters[0];
     }
 
-    this.startGameClick = this.startGameClickHandler.bind(this);
-    this.selectFighter = this.selectFighterHandler.bind(this);
-    this.createGame(fighters);
+    this._startGameClick = this._startGameClickHandler.bind(this);
+    this._selectFighter = this._selectFighterHandler.bind(this);
+    this._createGame(fighters);
   }
 
-  static rootElement = document.getElementById("root");
-  static loadingElement = document.getElementById("loading-overlay");
+  private static _rootElement: HTMLDivElement | null = document.getElementById("root") as HTMLDivElement;
+  private static _loadingElement: HTMLDivElement | null = document.getElementById(
+    "loading-overlay"
+  ) as HTMLDivElement;
 
-  createGame(fighters) {
-    const logo = this.createLogo("../../../resources/logo.png");
-    const gamePanel = this.createGamePanel(fighters);
+  private _createGame(fighters: IFighter[]): void {
+    const logo: HTMLDivElement = this._createLogo("../../../resources/logo.png");
+    const gamePanel: HTMLDivElement = this._createGamePanel(fighters) as HTMLDivElement;
 
-    this.fightersView = new FightersView(fighters);
-    const fightersElement = this.fightersView.element;
+    this._fightersView = new FightersView(fighters);
+    const fightersElement: HTMLDivElement = this._fightersView.element as HTMLDivElement;
 
     this.element = this.createElement({
       tagName: "div",
@@ -40,82 +48,85 @@ class GameView extends View {
       attributes: {
         id: "game"
       }
-    });
-    this.element.append(logo, fightersElement, gamePanel);
-    this.element.addEventListener("selectFighter", this.selectFighter);
+    }) as HTMLDivElement;
+    this.element.append(logo, fightersElement as Node, gamePanel);
+    this.element.addEventListener("selectFighter", this._selectFighter);
   }
 
-  createGamePanel(fighters) {
-    const gamePanel = this.createElement({
+  _createGamePanel(fighters: IFighter[]): HTMLElement {
+    const gamePanel: HTMLDivElement = this.createElement({
       tagName: "div",
       className: "game-panel"
-    });
+    }) as HTMLDivElement;
 
-    const startGameBtn = this.createStartGameBtn(this.startGameClick);
-    const selectFighters = new SelectFightersView(fighters);
-    gamePanel.append(selectFighters.element, startGameBtn);
+    const startGameBtn: HTMLButtonElement = this._createStartGameBtn(this._startGameClick) ;
+    const selectFighters: IView = new SelectFightersView(fighters);
+    gamePanel.append(selectFighters.element as Node, startGameBtn);
     return gamePanel;
   }
 
-  createStartGameBtn(startGame) {
-    const startGameBtn = this.createElement({
+  private _createStartGameBtn(startGame: () => void): HTMLButtonElement {
+    const startGameBtn: HTMLButtonElement = this.createElement({
       tagName: "button",
       className: "start-game"
-    });
+    }) as HTMLButtonElement;
     startGameBtn.innerHTML = "Start Game";
     startGameBtn.onclick = startGame;
     return startGameBtn;
   }
 
-  async startGameClickHandler() {
+  private async _startGameClickHandler(): Promise<void> {
     // get fighter details if they have not been received yet
     try {
-      const fightersDetailsMap = this.fightersView.fightersDetailsMap;
-      const _ids = [this.fighter1._id, this.fighter2._id];
+      const fightersDetailsMap = (this._fightersView as IFightersView).fightersDetailsMap;
+      const _ids = [(this._fighter1 as IFighter)._id, (this._fighter2 as IFighter)._id];
 
-      GameView.loadingElement.style.visibility = "visible";
-      GameView.rootElement.style.visibility = "hidden";
+      (GameView._loadingElement as HTMLDivElement).style.visibility = "visible";
+      (GameView._rootElement as HTMLDivElement).style.visibility = "hidden";
 
       for (const _id of _ids) {
         if (!fightersDetailsMap.get(_id)) {
-          await fightersService.updateFighterDetailsInMap(_id, fightersDetailsMap);
+          await fightersService.updateFighterDetailsInMap(
+            _id,
+            fightersDetailsMap
+          );
         }
       }
 
       const fightersDetails = _ids.map(_id => fightersDetailsMap.get(_id));
-      const fightView = new FightView(fightersDetails[0], fightersDetails[1]);
-      GameView.rootElement.append(fightView.element);
-      GameView.rootElement.style.visibility = "visible";
-      this.element.style.display = "none";
+      const fightView = new FightView(fightersDetails[0] as IFighter, fightersDetails[1] as IFighter);
+      (GameView._rootElement as HTMLDivElement).append(fightView.element as Node);
+      (GameView._rootElement as HTMLDivElement).style.visibility = "visible";
+      (this.element as HTMLDivElement).style.display = "none";
     } catch (error) {
-      GameView.rootElement.innerText = APP_CONSTANTS.FAILED_TO_LOAD_TEXT;
+      (GameView._rootElement as HTMLDivElement).innerText = APP_CONSTANTS.FAILED_TO_LOAD_TEXT;
       throw error;
     } finally {
-      GameView.loadingElement.style.visibility = "hidden";
+      (GameView._loadingElement as HTMLDivElement).style.visibility = "hidden";
     }
   }
 
-  createLogo(source) {
-    const logo = this.createElement({
+  private _createLogo(source: string): HTMLDivElement {
+    const logo: HTMLDivElement = this.createElement({
       tagName: "div",
       className: "fighter-logo"
-    });
-    const logoImg = this.createElement({
+    }) as HTMLDivElement; 
+    const logoImg: HTMLImageElement = this.createElement({
       tagName: "img",
       className: "logo-image",
       attributes: {
         src: source
       }
-    });
+    }) as HTMLImageElement;
     logo.append(logoImg);
     return logo;
   }
 
-  selectFighterHandler(event) {
+  private _selectFighterHandler(event: SelectFighterEvent): void {
     const { detail } = event;
     detail.order === "1"
-      ? (this.fighter1 = detail.selectedFighter)
-      : (this.fighter2 = detail.selectedFighter);
+      ? (this._fighter1 = detail.selectedFighter)
+      : (this._fighter2 = detail.selectedFighter);
   }
 }
 

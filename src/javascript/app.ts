@@ -1,3 +1,6 @@
+import IFighter from "./models/fighter";
+import { IView } from "./views/view";
+
 import GameView from "./views/gameView";
 import { fightersService } from "./services/fightersService";
 import APP_CONSTANTS from './helpers/constants';
@@ -7,23 +10,23 @@ class App {
     this.startApp();
   }
 
-  static rootElement = document.getElementById("root");
-  static loadingElement = document.getElementById("loading-overlay");
+  private static _rootElement: HTMLElement | null = document.getElementById("root");
+  private static _loadingElement: HTMLElement | null = document.getElementById("loading-overlay");
 
-  async startApp() {
+  async startApp(): Promise<void> {
     try {
-      App.loadingElement.style.visibility = "visible";
+      App._loadingElement!.style.visibility = "visible";
 
-      const fighters = await fightersService.getFighters();
-      const gameView = new GameView(fighters);
-      const gameElement = gameView.element;
+      const fighters: IFighter[] = await fightersService.getFighters();
+      const gameView: IView = new GameView(fighters);
+      const gameElement: HTMLElement|null = gameView.element;
 
-      App.rootElement.appendChild(gameElement);
+      App._rootElement!.appendChild(gameElement as Node);
     } catch (error) {
       console.warn(error);
-      App.rootElement.innerText = APP_CONSTANTS.FAILED_TO_LOAD_TEXT;
+      App._rootElement!.innerText = APP_CONSTANTS.FAILED_TO_LOAD_TEXT;
     } finally {
-      App.loadingElement.style.visibility = "hidden";
+      App._loadingElement!.style.visibility = "hidden";
     }
   }
 }

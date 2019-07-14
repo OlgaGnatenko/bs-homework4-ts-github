@@ -1,41 +1,57 @@
-import View from "./view";
+import IFighter from "../models/fighter";
+
+import View, { IView } from "./view";
 import FighterView from "./fighterView";
 import FighterDetailsView from "./fighterDetailsView";
 import { fightersService } from "../services/fightersService";
 
-class FightersView extends View {
-  constructor(fighters) {
+export interface IFightersView extends IView {
+  fightersDetailsMap: Map<string, IFighter>;
+}
+
+class FightersView extends View implements IFightersView {
+  element: HTMLDivElement | null = null;
+  fightersDetailsMap: Map<string, IFighter> = new Map();
+  
+  constructor(fighters: IFighter[]) {
     super();
 
-    this.handleClick = this.handleFighterClick.bind(this);
-    this.createFighters(fighters);
+    this._handleClick = this._handleFighterClick.bind(this);
+    this._createFighters(fighters);
   }
 
-  static modal = document.getElementById("modal");
-  static backgroundOverlay = document.getElementById("background-overlay");
-  fightersDetailsMap = new Map();
+  private _handleClick: () => void;
 
-  createFighters(fighters) {
-    const fighterElements = fighters.map(fighter => {
-      const fighterView = new FighterView(fighter, this.handleClick);
-      return fighterView.element;
-    });
+  private static _modal: HTMLDivElement = document.getElementById(
+    "modal"
+  ) as HTMLDivElement;
+  private static _backgroundOverlay = document.getElementById(
+    "background-overlay"
+  ) as HTMLDivElement;
+
+  private _createFighters(fighters: IFighter[]): void {
+    const fighterElements: HTMLDivElement[] = fighters.map(
+      (fighter: IFighter): HTMLDivElement => {
+        const fighterView: IView = new FighterView(fighter, this._handleClick);
+        return fighterView.element as HTMLDivElement;
+      }
+    );
 
     this.element = this.createElement({
       tagName: "div",
       className: "fighters"
-    });
+    }) as HTMLDivElement;
 
-    const fightersInternalContainer = this.createElement({
+    const fightersInternalContainer: HTMLDivElement = this.createElement({
       tagName: "div",
       className: "fighters-internal-container"
-    });
+    }) as HTMLDivElement;
     fightersInternalContainer.append(...fighterElements);
     this.element.append(fightersInternalContainer);
   }
 
-  async handleFighterClick(event, fighter) {
-    const selectedFighter = this.fightersDetailsMap.get(fighter._id);
+  private async _handleFighterClick(event: Event, fighter: IFighter): Promise<void> {
+    const selectedFighter: IFighter | undefined = this.fightersDetailsMap.get(fighter._id);
     try {
       if (!selectedFighter) {
         await fightersService.updateFighterDetailsInMap(
@@ -43,14 +59,16 @@ class FightersView extends View {
           this.fightersDetailsMap
         );
       }
-      const fighterWithDetails = this.fightersDetailsMap.get(fighter._id);
-      const fighterDetailsView = new FighterDetailsView(
+      const fighterWithDetails: IFighter = this.fightersDetailsMap.get(
+        fighter._id
+      ) as IFighter;
+      const fighterDetailsView: IView = new FighterDetailsView(
         fighterWithDetails,
         this.fightersDetailsMap
       );
-      FightersView.modal.append(fighterDetailsView.element);
-      FightersView.backgroundOverlay.style.display = "block";
-      FightersView.modal.style.display = "block";
+      FightersView._modal.append(fighterDetailsView.element as Node);
+      FightersView._backgroundOverlay.style.display = "block";
+      FightersView._modal.style.display = "block";
     } catch (error) {
       throw error;
     }

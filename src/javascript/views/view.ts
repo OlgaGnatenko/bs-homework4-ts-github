@@ -1,11 +1,29 @@
-class View {
-  element;
+import IAttributesDict from "../models/attributesDict";
 
-  createElement({ tagName, className = "", attributes = {} }) {
-    const element = document.createElement(tagName);
+export interface IView {
+  element: HTMLElement | null;
+}
+
+class View {
+  element: HTMLElement | null = null;
+
+  createElement({
+    tagName = "",
+    className = "",
+    attributes = {}
+  }: {
+    tagName: string;
+    className: string;
+    attributes?: IAttributesDict;
+  }) {
+    const element: HTMLElement = document.createElement(tagName);
     element.classList.add(className);
-    Object.keys(attributes).forEach(key =>
-      element.setAttribute(key, attributes[key])
+    Object.keys(attributes).forEach(
+      (key: string): void => {
+        const attributeText =
+          attributes && attributes[key] ? (attributes[key] as string) : "";
+        element.setAttribute(key, attributeText);
+      }
     );
 
     return element;

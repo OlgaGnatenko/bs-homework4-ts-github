@@ -1,124 +1,137 @@
 import View from "./view";
 import Fighter from "../classes/fighter";
+import IFighter from "../models/fighter";
 
-class ActiveFighterView extends View {
-  fighter;
-  maxHealth;
+export interface IActiveFighterView {
+  element: HTMLDivElement | null;
+  updateHealth: (health: number) => void;
+}
 
-  constructor(fighter, maxHealth) {
+class ActiveFighterView extends View implements IActiveFighterView {
+  element: HTMLDivElement | null = null;
+  private _fighter: IFighter;
+  private _maxHealth: number;
+
+  constructor(fighter: IFighter, maxHealth: number) {
     super();
 
-    this.fighter = fighter;
-    this.maxHealth = maxHealth;
-    this.createActiveFighterView(fighter);
+    this._fighter = fighter;
+    this._maxHealth = maxHealth;
+    this._createActiveFighterView(fighter);
   }
 
-  createActiveFighterView(fighter) {
+  private _createActiveFighterView(fighter: IFighter): void {
     this.element = this.createElement({
       tagName: "div",
       className: "active-fighter"
-    });
+    }) as HTMLDivElement;
 
-    const nameElement = this.createName(fighter.name);
-    const fighterContainer = this.createFighterContainer(fighter);
-    const healthBar = this.createHealthContainer(fighter.health);
+    const nameElement: HTMLDivElement = this._createName(fighter.name);
+    const fighterContainer: HTMLDivElement = this._createFighterContainer(fighter);
+    const healthBar: HTMLDivElement = this._createHealthContainer(fighter.health);
 
     this.element.append(nameElement, fighterContainer, healthBar);
   }
 
-  createName(name) {
-    const nameElement = this.createElement({
+  private _createName(name: string): HTMLDivElement {
+    const nameElement: HTMLDivElement = this.createElement({
       tagName: "div",
       className: "active-fighter-name"
-    });
+    }) as HTMLDivElement;
     nameElement.innerHTML = name;
     return nameElement;
   }
 
-  createFighterContainer(fighter) {
-    const fighterContainer = this.createElement({
+  private _createFighterContainer(fighter: IFighter): HTMLDivElement {
+    const fighterContainer: HTMLDivElement = this.createElement({
       tagName: "div",
       className: "fighter-detail"
-    });
+    }) as HTMLDivElement;
 
-    const img = this.createImg(fighter.source);
-    const attackLabel = this.createInfoLabel(
+    const img: HTMLImageElement = this._createImg(fighter.source);
+    const attackLabel: HTMLDivElement = this._createInfoLabel(
       "Attack",
       fighter.attack,
       "attack"
-    );
-    const defenseLabel = this.createInfoLabel(
+    ) as HTMLDivElement;
+    const defenseLabel: HTMLDivElement = this._createInfoLabel(
       "Defense",
       fighter.defense,
       "defense"
-    );
+    ) as HTMLDivElement;
 
     fighterContainer.append(attackLabel, defenseLabel, img);
     return fighterContainer;
   }
 
-  createHealthContainer(health) {
-    const healthContainer = this.createElement({
+  private _createHealthContainer(health: number): HTMLDivElement {
+    const healthContainer: HTMLDivElement = this.createElement({
       tagName: "div",
       className: "health-container"
-    });
+    }) as HTMLDivElement;
 
-    const healthBar = this.createElement({
+    const healthBar: HTMLDivElement = this.createElement({
       tagName: "div",
       className: "health-bar"
-    });
-    healthBar.style.width = `${this.getHealthPercent(health)}%`;
+    }) as HTMLDivElement;
+    healthBar.style.width = `${this._getHealthPercent(health)}%`;
 
-    const healthValue = this.createElement({
+    const healthValue: HTMLDivElement = this.createElement({
       tagName: "div",
       className: "health-value"
-    });
-    healthValue.innerHTML = health;
+    }) as HTMLDivElement;
+    healthValue.innerHTML = health.toString();
 
     healthContainer.append(healthValue, healthBar);
     return healthContainer;
   }
 
-  createImg(source) {
-    const img = this.createElement({
+  private _createImg(source: string | undefined): HTMLImageElement {
+    const img: HTMLImageElement = this.createElement({
       tagName: "img",
       className: "active-fighter-image",
       attributes: {
         src: source
       }
-    });
+    }) as HTMLImageElement;
     return img;
   }
 
-  createInfoLabel(name, value, className) {
-    const infoLabel = this.createElement({
+  private _createInfoLabel(name: string, value: string | number, className: string): HTMLDivElement {
+    const infoLabel: HTMLDivElement = this.createElement({
       tagName: "div",
       className
-    });
-    const labelSpan = this.createElement({
+    }) as HTMLDivElement;
+    const labelSpan: HTMLSpanElement = this.createElement({
       tagName: "span",
       className: `${className}-label`
-    });
+    }) as HTMLSpanElement;
     labelSpan.innerHTML = name;
-    const valueSpan = this.createElement({
+    const valueSpan: HTMLSpanElement = this.createElement({
       tagName: "span",
       className: `${className}-value`
-    });
-    valueSpan.innerHTML = value;
+    }) as HTMLSpanElement;
+    valueSpan.innerHTML = value + "";
     infoLabel.append(labelSpan, valueSpan);
     return infoLabel;
   }
 
-  updateHealth(health) {
-    const healthPercent = this.getHealthPercent(health);
-    const healthBar = this.element.querySelector(".health-bar");
+  updateHealth(health: number): void {
+    const healthPercent: number = this._getHealthPercent(health);
+    const healthBar: HTMLDivElement = (this
+      .element as HTMLDivElement).querySelector(
+      ".health-bar"
+    ) as HTMLDivElement;
     healthBar.style.width = `${healthPercent}%`;
-    const healthValue = this.element.querySelector(".health-value");
-    healthValue.innerHTML = health;
+    const healthValue: HTMLDivElement = (this
+      .element as HTMLDivElement).querySelector(
+      ".health-value"
+    ) as HTMLDivElement;
+    healthValue.innerHTML = health.toString();
   }
 
-  getHealthPercent(health) {
-    return Math.floor((health / this.maxHealth) * 100);
+  private _getHealthPercent(health: number): number {
+    return Math.floor((health / this._maxHealth) * 100);
   }
 }
 
